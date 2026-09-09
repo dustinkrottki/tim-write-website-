@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://tim-write.de/sitemap.xml
+Sitemap: https://www.tim-write.de/sitemap.xml
