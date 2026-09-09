@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tim Write — Graffiti &amp; Street Art aus Aurich, Ostfriesland</title>
+<meta name="description" content="Tim Write (Tim Wefers): Graffiti, Hauswandgestaltung, Leinwände und Workshops in Aurich, Ostfriesland. Auftragsarbeiten für Privat und Gewerbe.">
+<!-- TODO: Domain final festlegen und hier + Open Graph + canonical + sitemap.xml/CNAME anpassen -->
+<link rel="canonical" href="https://tim-write.de/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tim Write — Graffiti & Street Art aus Aurich, Ostfriesland">
+<meta property="og:description" content="Graffiti, Hauswandgestaltung, Leinwände und Workshops in Aurich, Ostfriesland.">
+<meta property="og:image" content="https://tim-write.de/images/header-foto.jpg">
+<meta property="og:url" content="https://tim-write.de/">
+<meta property="og:locale" content="de_DE">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tim Write — Graffiti & Street Art aus Aurich, Ostfriesland">
+<meta name="twitter:description" content="Graffiti, Hauswandgestaltung, Leinwände und Workshops in Aurich, Ostfriesland.">
+<meta name="twitter:image" content="https://tim-write.de/images/header-foto.jpg">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  @font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400 500;
+    font-display: swap;
+    src: url('fonts/inter-latin-variable.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Space Grotesk';
+    font-style: normal;
+    font-weight: 400 500 700;
+    font-display: swap;
+    src: url('fonts/space-grotesk-latin-variable.woff2') format('woff2');
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { background:#FFFFFF; font-family:'Inter',sans-serif; color:#0A0A0A; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:1200px; margin:0 auto; padding:0 60px; }
+
+  /* HERO / HEADER */
+  .hero { position:relative; width:100%; height:100vh; min-height:640px; overflow:hidden; background:#0A0A0A; }
+  .hero-img { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; object-position:center 30%; }
+  .hero-overlay { position:absolute; top:0; left:0; width:100%; height:100%; background:linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.05) 30%, rgba(0,0,0,0.25) 65%, rgba(0,0,0,0.75) 100%); }
+  .top { position:absolute; top:0; left:0; width:100%; display:flex; justify-content:space-between; align-items:center; padding-top:36px; z-index:10; }
+  .top .name { font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:18px; letter-spacing:-0.2px; color:#FFFFFF; }
+
+  .burger { width:32px; height:22px; position:relative; background:none; border:none; padding:0; z-index:20; cursor:pointer; }
+  .burger span { position:absolute; left:0; width:100%; height:2px; background:#FFFFFF; transition:transform 0.25s ease, opacity 0.2s ease; }
+  .burger span:nth-child(1) { top:0; }
+  .burger span:nth-child(2) { top:10px; }
+  .burger span:nth-child(3) { top:20px; }
+
+  .menu-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#0A0A0A; z-index:100; display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; transition:opacity 0.3s ease, visibility 0.3s ease; overflow-y:auto; }
+  .menu-overlay.open { opacity:1; visibility:visible; }
+  .menu-close { position:absolute; top:36px; right:60px; background:none; border:none; color:#FFFFFF; font-size:24px; cursor:pointer; }
+  .menu-nav { display:flex; flex-direction:column; align-items:center; gap:24px; padding:80px 24px; }
+  .menu-nav a { color:#FFFFFF; text-decoration:none; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:32px; letter-spacing:-0.5px; }
+  .menu-nav a:hover { color:#C9EA00; }
+  .menu-cta { margin-top:16px; background:#FFFFFF; color:#0A0A0A !important; padding:14px 32px; border-radius:2px; font-size:18px !important; }
+  .menu-cta:hover { background:#C9EA00; color:#0A0A0A !important; }
+
+  .hero-content { position:absolute; bottom:70px; left:60px; right:60px; z-index:10; max-width:920px; }
+  .hero-content h1 { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:84px; line-height:1.02; letter-spacing:-2.5px; color:#FFFFFF; }
+  .hero-content .tagline { font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:20px; color:#C9EA00; margin-top:10px; }
+  .hero-content .meta { display:flex; gap:40px; margin-top:28px; font-size:14px; color:rgba(255,255,255,0.75); flex-wrap:wrap; }
+  .cta-button-hero { display:inline-block; margin-top:36px; background:#FFFFFF; color:#0A0A0A; text-decoration:none; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:15px; letter-spacing:-0.1px; padding:16px 30px; border-radius:2px; transition:background 0.15s ease; }
+  .cta-button-hero:hover { background:#C9EA00; }
+
+  /* GALLERY SECTIONS */
+  section.gallery-section { padding-top:100px; }
+  section.gallery-section:first-of-type { padding-top:140px; }
+  .section-label { font-size:13px; letter-spacing:1.5px; text-transform:uppercase; color:#8A8A8A; margin-bottom:12px; }
+  .section-intro { font-size:16px; color:#2b2b2b; max-width:640px; margin-bottom:36px; line-height:1.6; }
+  .grid { column-count:2; column-gap:40px; }
+  .item { break-inside:avoid; margin-bottom:56px; display:inline-block; width:100%; }
+  .item .image { width:100%; overflow:hidden; background:#EDEDED; }
+  .item .image img { width:100%; height:auto; display:block; }
+
+  /* VIDEO */
+  section#video { padding-top:100px; padding-bottom:100px; }
+  .video-toggle { background:#0A0A0A; color:#FFFFFF; border:none; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:15px; padding:16px 30px; border-radius:2px; cursor:pointer; display:inline-flex; align-items:center; gap:10px; }
+  .video-toggle:hover { background:#333333; }
+  #videoToggleIcon { transition:transform 0.2s ease; display:inline-block; }
+  .video-links { max-height:0; overflow:hidden; transition:max-height 0.3s ease; margin-top:0; }
+  .video-links.open { max-height:300px; margin-top:28px; }
+  .video-links a { display:flex; justify-content:space-between; align-items:center; padding:18px 0; border-top:1px solid #EDEDED; text-decoration:none; color:#0A0A0A; }
+  .video-links a:last-child { border-bottom:1px solid #EDEDED; }
+  .video-link-title { font-size:16px; font-weight:500; }
+  .video-link-arrow { font-size:16px; color:#8A8A8A; transition:transform 0.15s ease; }
+  .video-links a:hover .video-link-arrow { transform:translateX(4px); color:#0A0A0A; }
+
+  /* ABOUT */
+  section#ueber-mich { padding-top:100px; padding-bottom:120px; }
+  .about-grid { display:grid; grid-template-columns:0.9fr 1.1fr; gap:70px; align-items:start; }
+  .about-grid .portrait { width:100%; aspect-ratio:3/4; overflow:hidden; background:#EDEDED; }
+  .about-grid .portrait img { width:100%; height:100%; object-fit:cover; display:block; }
+  .about-grid .photo-credit { margin-top:10px; font-size:12px; color:#8A8A8A; text-align:right; }
+  .about-text p { font-size:17px; line-height:1.75; color:#2b2b2b; margin-bottom:22px; max-width:560px; }
+  .about-text b { font-weight:500; color:#0A0A0A; }
+  .about-text .press-list { margin-top:28px; }
+  .about-text .press-list .section-label { margin-bottom:14px; }
+  .about-text .press-list a { display:block; font-size:14px; color:#0A0A0A; text-decoration:none; border-bottom:1px solid #EDEDED; padding:10px 0; max-width:560px; }
+  .about-text .press-list a:hover { color:#8A8A8A; }
+
+  /* CONTACT */
+  section#kontakt { padding-bottom:100px; }
+  .contact-box { display:flex; justify-content:space-between; align-items:flex-end; border-top:2px solid #0A0A0A; padding-top:40px; flex-wrap:wrap; gap:24px; }
+  .contact-box h2 { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:48px; letter-spacing:-1.5px; max-width:500px; }
+  .contact-links { display:flex; flex-direction:column; gap:10px; align-items:flex-end; font-size:15px; }
+  .contact-links a { color:#0A0A0A; text-decoration:none; border-bottom:1px solid transparent; }
+  .contact-links a:hover { border-bottom:1px solid #0A0A0A; }
+
+  .contact-services { display:flex; gap:16px; flex-wrap:wrap; margin-top:36px; }
+  .service-btn { background:#0A0A0A; color:#FFFFFF; text-decoration:none; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:15px; letter-spacing:-0.1px; padding:16px 28px; border-radius:2px; transition:background 0.15s ease, color 0.15s ease; }
+  .service-btn:hover { background:#C9EA00; color:#0A0A0A; }
+
+  footer { padding:40px 0 50px; text-align:center; }
+  footer .copyright { font-size:12px; color:#c4c4c4; margin-bottom:10px; }
+  footer .legal-links { font-size:14px; }
+  footer .legal-links a { color:#0A0A0A; text-decoration:underline; margin:0 8px; }
+  footer .legal-links a:hover { color:#555; }
+
+  @media (max-width:820px) {
+    .wrap { padding:0 24px; }
+    .hero-content { left:24px; right:24px; bottom:50px; }
+    .hero-content h1 { font-size:44px; letter-spacing:-1.5px; }
+    .hero-content .meta { gap:16px 24px; }
+    .top.wrap { padding:0 24px; }
+    .menu-nav a { font-size:26px; }
+    .grid { column-count:1; }
+    .about-grid { grid-template-columns:1fr; }
+    .contact-box { flex-direction:column; align-items:flex-start; gap:24px; }
+    .contact-links { align-items:flex-start; }
+  }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Tim Wefers",
+  "alternateName": "Tim Write",
+  "url": "https://tim-write.de",
+  "image": "https://tim-write.de/images/portrait.jpg",
+  "jobTitle": "Graffiti-Künstler",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Aurich",
+    "addressRegion": "Ostfriesland",
+    "addressCountry": "DE"
+  },
+  "sameAs": [
+    "https://www.facebook.com/tim.wefers/"
+  ]
+}
+</script>
+</head>
+<body>
+
+<header class="hero">
+  <img src="images/header-foto.jpg" alt="Graffiti-Leinwand in einer Gebäuderuine, Werk von Tim Write" class="hero-img">
+  <div class="hero-overlay"></div>
+  <div class="top wrap">
+    <div class="name">TIM WRITE</div>
+    <button class="burger" id="burgerBtn" aria-label="Menü öffnen">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="hero-content">
+    <h1>TIM WRITE</h1>
+    <div class="tagline">the Wildside of life</div>
+    <div class="meta">
+      <span>Graffiti &amp; Street Art</span>
+      <span>Aurich, Ostfriesland</span>
+    </div>
+    <a href="#kontakt" class="cta-button-hero">Für Auftragsarbeiten anfragen →</a>
+  </div>
+</header>
+
+<div class="menu-overlay" id="menuOverlay">
+  <button class="menu-close" id="menuCloseBtn" aria-label="Menü schließen">✕</button>
+  <nav class="menu-nav">
+    <a href="#wandgestaltung">Wandgestaltung</a>
+    <a href="#leinwaende">Leinwände</a>
+    <a href="#skulpturen">Skulpturen</a>
+    <a href="#workshops">Workshops</a>
+    <a href="#ausstellungen">Ausstellungen</a>
+    <a href="#video">Video</a>
+    <a href="#ueber-mich">Über mich</a>
+    <a href="#kontakt">Kontakt</a>
+    <a href="#kontakt" class="menu-cta">Anfragen</a>
+  </nav>
+</div>
+
+<main class="wrap">
+
+  <section id="wandgestaltung" class="gallery-section">
+    <div class="section-label">Wandgestaltung &amp; Auftragsarbeiten</div>
+    <p class="section-intro">Fassaden, Hauswände und Container – großformatige Auftragsarbeiten für Privat und Gewerbe in Aurich und Ostfriesland.</p>
+    <div class="grid">
+      <div class="item">
+        <div class="image"><img src="images/hauswandgestaltung-1.jpg" alt="Bemalte Hausfassade mit großflächigem Graffiti, Signatur 'the Wildsmile'"></div>
+      </div>
+      <div class="item">
+        <div class="image"><img src="images/hauswandgestaltung-2.jpg" alt="Hauswandgestaltung von Tim Write"></div>
+      </div>
+      <div class="item">
+        <div class="image"><img src="images/hauswandgestaltung-3.jpg" alt="Hauswandgestaltung von Tim Write"></div>
+      </div>
+      <div class="item">
+        <div class="image"><img src="images/graffiti.jpg" alt="Graffiti-Schriftzug auf weißer Leinwand vor winterlicher Gebäuderuine"></div>
+      </div>
+    </div>
+    <!-- PLATZHALTER: hier passen weitere Auftragsarbeiten aus der Recherche gut rein,
+         z.B. Optik Lenk Aurich, OMG.de/ActiView Servercontainer, Blütenfest 2022,
+         Neukamperfehn, Skatepark Emden – sobald Tim Fotos dazu freigibt. -->
+  </section>
+
+  <section id="leinwaende" class="gallery-section">
+    <div class="section-label">Leinwände</div>
+    <p class="section-intro">Kleinere, käufliche Arbeiten – gemalt und gesprüht auf Leinwand.</p>
+    <div class="grid">
+      <div class="item">
+        <div class="image"><img src="images/leinwaende-1.jpg" alt="Abstraktes Porträt auf Leinwand, Signatur 'the Wild Willy's'"></div>
+      </div>
+      <div class="item">
+        <div class="image"><img src="images/leinwaende-2.jpg" alt="Leinwandarbeit von Tim Write"></div>
+      </div>
+      <div class="item">
+        <div class="image"><img src="images/leinwaende-3.jpg" alt="Leinwandarbeit von Tim Write"></div>
+      </div>
+      <div class="item">
+        <div class="image"><img src="images/leinwaende-4.jpg" alt="Leinwandarbeit von Tim Write"></div>
+      </div>
+      <div class="item">
+        <div class="image"><img src="images/leinwaende-5.jpg" alt="Leinwandarbeit von Tim Write"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="skulpturen" class="gallery-section">
+    <div class="section-label">Skulpturen : Objekte</div>
+    <p class="section-intro">Dreidimensionale Arbeiten – bemalte Holzobjekte und Wandskulpturen.</p>
+    <div class="grid">
+      <div class="item">
+        <div class="image"><img src="images/skulpturen-1.jpg" alt="Bemalte Holzskulptur an einer Wand, Graffiti-Charakter"></div>
+      </div>
+      <div class="item">
+        <div class="image"><img src="images/skulpturen-2.jpg" alt="Skulptur/Objekt von Tim Write"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="workshops" class="gallery-section">
+    <div class="section-label">Workshops</div>
+    <p class="section-intro">Graffiti-Kurse und Projekte für Kinder und Jugendliche – u.a. an der Kunstschule Miraculum Aurich und über die VHS Aurich.</p>
+    <div class="grid">
+      <div class="item">
+        <div class="image"><img src="images/workshop-1.jpg" alt="Workshop mit Kindern"></div>
+      </div>
+      <div class="item">
+        <div class="image"><img src="images/workshop-2.jpg" alt="Workshop mit Kindern"></div>
+      </div>
+      <div class="item">
+        <div class="image"><img src="images/workshop-3.jpg" alt="Workshop mit Kindern"></div>
+      </div>
+      <div class="item">
+        <div class="image"><img src="images/workshop-4.jpg" alt="Workshop mit Kindern"></div>
+      </div>
+      <div class="item">
+        <div class="image"><img src="images/workshop-5.jpg" alt="Workshop mit Kindern"></div>
+      </div>
+      <div class="item">
+        <div class="image"><img src="images/workshop-6.jpg" alt="Workshop mit Kindern"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="ausstellungen" class="gallery-section">
+    <div class="section-label">Ausstellungen</div>
+    <p class="section-intro">Ausstellungsbeteiligungen und die eigene Galerie in der Fockenbollwerkstraße, Aurich.</p>
+    <div class="grid">
+      <div class="item">
+        <div class="image"><img src="images/ausstellung-1.jpg" alt="Ausstellungsraum mit großformatiger Skulptur und ausgestellten Werken"></div>
+      </div>
+      <div class="item">
+        <div class="image"><img src="images/ausstellung-2.jpg" alt="Ausstellung von Tim Write"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="video">
+    <div class="section-label">Video</div>
+    <button class="video-toggle" id="videoToggle">Videos ansehen <span id="videoToggleIcon">↓</span></button>
+    <div class="video-links" id="videoLinks">
+      <a href="https://www.youtube.com/shorts/FXSeqEE_BaQ" target="_blank" rel="noopener">
+        <span class="video-link-title">Graffiti artist opens gallery in Aurich</span>
+        <span class="video-link-arrow">→</span>
+      </a>
+      <a href="https://www.facebook.com/OstfriesischeNachrichten/videos/813088705020189/" target="_blank" rel="noopener">
+        <span class="video-link-title">Graffitti-Künstler eröffnet Galerie in Aurich (Ostfriesische Nachrichten)</span>
+        <span class="video-link-arrow">→</span>
+      </a>
+      <a href="https://www.facebook.com/actiview.de/videos/1225999064258562/" target="_blank" rel="noopener">
+        <span class="video-link-title">Server-Container-Kunstwerk für OMG.de &amp; ActiView</span>
+        <span class="video-link-arrow">→</span>
+      </a>
+    </div>
+  </section>
+
+  <section id="ueber-mich">
+    <div class="section-label">Über mich</div>
+    <div class="about-grid">
+      <div>
+        <div class="portrait"><img src="images/portrait.jpg" alt="Tim Write mit Atemschutzmaske und Spraydose vor einem Graffiti-Werk"></div>
+        <div class="photo-credit">Foto: Dustin Krottki</div>
+      </div>
+      <div class="about-text">
+        <p><b>Ich bin Tim Write</b>, Jahrgang 1990, geboren und aufgewachsen in <b>Aurich</b> – Graffiti-Künstler und Kopf hinter <b>Write the Wild</b>.</p>
+        <p>Mit zehn Jahren entdeckte ich Graffiti über einen Nachbarn und die mit ihm verbundene Hip-Hop-Kultur. Für mich ist es mehr als Farbe auf Wand, es ist Ausdruck, Geschichte, Identität.</p>
+        <p>Mein Stil verbindet klassisches Graffiti mit Realismus und illustrativen Elementen. Ob Fassade, Unternehmen oder öffentliche Einrichtung, bei Workshops, Veranstaltungen oder Live-Paintings – jedes Projekt wird individuell auf Ort, Mensch und Thema abgestimmt.</p>
+        <p>Gefühl ist mir wichtiger als Material, daher freu ich mich über das, was da ist. Ich bin mein größter Kritiker und Fan und halte mich bei Laune, indem ich experimentiere und jedes Bild neuen Reizen und Perspektiven aussetze.</p>
+        <p>Mein Ziel ist Kunst, die bleibt, berührt und inspiriert – nicht nur betrachtet wird. Lass dich ansprechen und schau über den Horizont mit mir.</p>
+        <div class="press-list">
+          <div class="section-label">In der Presse</div>
+          <a href="https://www.oz-online.de/artikel/573630/Aurich-Tim-Write-sprueht-Graffiti-an-Kik-Gebaeude" target="_blank" rel="noopener">Ostfriesen-Zeitung: Tim Write sprüht Graffiti an Kik-Gebäude</a>
+          <a href="https://www.on-online.de/artikel/316892/Graffiti-Kuenstler-gibt-Fassade-ein-neues-Gesicht" target="_blank" rel="noopener">Ostfriesische Nachrichten: Graffiti-Künstler gibt Fassade ein neues Gesicht</a>
+          <a href="https://www.nwzonline.de/landkreis-aurich/bekannt-wie-ein-bunter-hund-kult-graffiti-star-wird-dozent-an-auricher-kunstschule_a_4,1,1496478630.html" target="_blank" rel="noopener">NWZ: Kult-Graffiti-Star wird Dozent an Auricher Kunstschule</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="kontakt">
+    <div class="contact-box">
+      <h2>Anfrage</h2>
+      <div class="contact-links">
+        <a href="mailto:Tim.write-art@freenet.de">Tim.write-art@freenet.de</a>
+        <a href="https://www.facebook.com/tim.wefers/" target="_blank">Facebook: Tim Write</a>
+      </div>
+    </div>
+    <div class="contact-services">
+      <a class="service-btn" href="mailto:Tim.write-art@freenet.de?subject=Anfrage%3A%20Auftrag%20%2F%20Fassadengestaltung">Aufträge / Fassadengestaltung</a>
+      <a class="service-btn" href="mailto:Tim.write-art@freenet.de?subject=Anfrage%3A%20Workshop">Workshops für Groß &amp; Klein</a>
+      <a class="service-btn" href="mailto:Tim.write-art@freenet.de?subject=Anfrage%3A%20Leinwandarbeit">Leinwandarbeiten</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="legal-links"><a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></div>
+  <div class="copyright">© 2026 Tim Write</div>
+</footer>
+
+<script>
+  var videoToggle = document.getElementById('videoToggle');
+  var videoLinks = document.getElementById('videoLinks');
+  var videoToggleIcon = document.getElementById('videoToggleIcon');
+  videoToggle.addEventListener('click', function() {
+    videoLinks.classList.toggle('open');
+    videoToggleIcon.style.transform = videoLinks.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+  });
+
+  var burgerBtn = document.getElementById('burgerBtn');
+  var menuOverlay = document.getElementById('menuOverlay');
+  var menuCloseBtn = document.getElementById('menuCloseBtn');
+
+  function openMenu() { menuOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeMenu() { menuOverlay.classList.remove('open'); document.body.style.overflow = ''; }
+
+  burgerBtn.addEventListener('click', openMenu);
+  menuCloseBtn.addEventListener('click', closeMenu);
+  document.querySelectorAll('.menu-nav a').forEach(function(link) {
+    link.addEventListener('click', closeMenu);
+  });
+</script>
+
+</body>
+</html>
