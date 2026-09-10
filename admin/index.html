@@ -131,7 +131,9 @@
 <script>
 const WORKER_URL = "https://galerie-upload.galerie-upload-worker.workers.dev/upload";
 const MAX_WIDTH = 1600;
+const MAX_HEIGHT = 1600;
 const WEBP_QUALITY = 0.82;
+const JPEG_FALLBACK_QUALITY = 0.75;
 
 const categorySelect = document.getElementById("categorySelect");
 const fileInput = document.getElementById("fileInput");
@@ -165,7 +167,7 @@ function slugify(name) {
 
 async function resizeImage(file) {
   const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, MAX_WIDTH / bitmap.width);
+  const scale = Math.min(1, MAX_WIDTH / bitmap.width, MAX_HEIGHT / bitmap.height);
   const w = Math.round(bitmap.width * scale);
   const h = Math.round(bitmap.height * scale);
   const canvas = document.createElement("canvas");
@@ -180,7 +182,7 @@ async function resizeImage(file) {
     // Manche Browser (u.a. Safari) unterstützen keine WebP-Kodierung über canvas.toBlob
     // und liefern dann heimlich ein unkomprimiertes PNG zurück - deshalb explizit prüfen
     // und in diesem Fall auf ein ordentlich komprimiertes JPEG ausweichen.
-    blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
+    blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", JPEG_FALLBACK_QUALITY));
     ext = "jpg";
   }
   return { blob, ext, width: w, height: h };
