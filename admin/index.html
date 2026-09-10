@@ -97,6 +97,22 @@
   #log .muted { color: var(--muted); }
   .hint { font-size: 0.8rem; color: var(--muted); margin-top: -6px; margin-bottom: 14px; }
   [hidden] { display: none !important; }
+  button.secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  button.danger { background: var(--err); }
+  .existing-item {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  .existing-item img { width: 56px; height: 56px; object-fit: cover; border-radius: 6px; flex-shrink: 0; background: var(--border); }
+  .existing-item .info { flex: 1; min-width: 0; font-size: 0.85rem; }
+  .existing-item .info .alt { color: var(--text); }
+  .existing-item .info .caption { color: var(--muted); font-size: 0.78rem; }
+  .existing-item button { flex-shrink: 0; padding: 8px 12px; font-size: 0.8rem; }
 </style>
 </head>
 <body>
@@ -126,10 +142,17 @@
     <label>Status</label>
     <div id="log" class="muted">Noch keine Aktion.</div>
   </div>
+
+  <div class="panel">
+    <label>Vorhandene Fotos verwalten</label>
+    <button id="loadExistingBtn" type="button" class="secondary">Fotos laden</button>
+    <div id="existingList" style="margin-top: 14px;"></div>
+  </div>
 </div>
 
 <script>
-const WORKER_URL = "https://galerie-upload.galerie-upload-worker.workers.dev/upload";
+const WORKER_BASE = "https://galerie-upload.galerie-upload-worker.workers.dev";
+const WORKER_URL = `${WORKER_BASE}/upload`;
 const MAX_WIDTH = 1600;
 const MAX_HEIGHT = 1600;
 const WEBP_QUALITY = 0.82;
@@ -266,6 +289,66 @@ uploadBtn.addEventListener("click", async () => {
   logLine(`Fertig: ${okCount}/${entries.length} Foto(s) veröffentlicht. Die Live-Seite baut jetzt neu (meist ~30-60 Sekunden über GitHub Pages).`, okCount === entries.length ? "ok" : "err");
   uploadBtn.disabled = false;
 });
+
+const loadExistingBtn = document.getElementById("loadExistingBtn");
+const existingList = document.getElementById("existingList");
+
+loadExistingBtn.addEventListener("click", async () => {
+  loadExistingBtn.disabled = true;
+  existingList.textContent = "Lade...";
+  try {
+    const res = await fetch(`${WORKER_BASE}/list`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `Server-Fehler (${res.status})`);
+    renderExisting(data.images);
+  } catch (err) {
+    existingList.textContent = `Fehler beim Laden: ${err.message}`;
+  }
+  loadExistingBtn.disabled = false;
+});
+
+function renderExisting(images) {
+  existingList.innerHTML = "";
+  if (images.length === 0) {
+    existingList.textContent = "Keine Fotos gefunden.";
+    return;
+  }
+  images.forEach((img) => {
+    const row = document.createElement("div");
+    row.className = "existing-item";
+    row.innerHTML = `
+      <img src="../images/${img.filename}" alt="">
+      <div class="info">
+        <div class="alt">${img.caption || img.alt || img.filename}</div>
+        ${img.caption ? `<div class="caption">${img.alt}</div>` : ""}
+      </div>
+      <button type="button" class="danger">Löschen</button>
+    `;
+    row.querySelector("button").addEventListener("click", () => deleteExisting(img.filename, row));
+    existingList.appendChild(row);
+  });
+}
+
+async function deleteExisting(filename, row) {
+  if (!confirm(`"${filename}" wirklich endgültig löschen?`)) return;
+  const btn = row.querySelector("button");
+  btn.disabled = true;
+  btn.textContent = "...";
+  try {
+    const res = await fetch(`${WORKER_BASE}/delete`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ filename }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.ok) throw new Error(data.error || `Server-Fehler (${res.status})`);
+    row.remove();
+  } catch (err) {
+    alert(`Fehler beim Löschen: ${err.message}`);
+    btn.disabled = false;
+    btn.textContent = "Löschen";
+  }
+}
 </script>
 </body>
 </html>
