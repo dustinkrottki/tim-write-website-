@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Galerie-Upload</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f6f3;
+    --panel: #ffffff;
+    --text: #1a1a1a;
+    --muted: #6b6b6b;
+    --border: #e2e0da;
+    --accent: #b3421f;
+    --ok: #2e7d32;
+    --err: #c62828;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16151a;
+      --panel: #201f26;
+      --text: #f0efe9;
+      --muted: #9b9995;
+      --border: #34323a;
+      --accent: #e0703f;
+      --ok: #7fd18a;
+      --err: #ff8a80;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    padding: 32px 16px 80px;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 1.4rem; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 0.9rem; margin: 0 0 28px; }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
+  input[type=text], input[type=file], select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-size: 0.95rem;
+    margin-bottom: 14px;
+  }
+  select { background: var(--panel); }
+  button {
+    appearance: none;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--accent);
+    color: #fff;
+  }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .file-item {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  .file-item img { width: 64px; height: 64px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+  .file-item .fields { flex: 1; min-width: 0; }
+  .file-item input { margin-bottom: 6px; }
+  .file-item input:last-child { margin-bottom: 0; }
+  #log {
+    font-family: ui-monospace, monospace;
+    font-size: 0.82rem;
+    white-space: pre-wrap;
+    line-height: 1.5;
+    max-height: 240px;
+    overflow-y: auto;
+  }
+  #log .ok { color: var(--ok); }
+  #log .err { color: var(--err); }
+  #log .muted { color: var(--muted); }
+  .hint { font-size: 0.8rem; color: var(--muted); margin-top: -6px; margin-bottom: 14px; }
+  [hidden] { display: none !important; }
+  button.secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  button.danger { background: var(--err); }
+  .existing-item {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  .existing-item img { width: 56px; height: 56px; object-fit: cover; border-radius: 6px; flex-shrink: 0; background: var(--border); }
+  .existing-item .info { flex: 1; min-width: 0; font-size: 0.85rem; }
+  .existing-item .info .alt { color: var(--text); }
+  .existing-item .info .caption { color: var(--muted); font-size: 0.78rem; }
+  .existing-item button { flex-shrink: 0; padding: 8px 12px; font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Neue Fotos zur Galerie hinzufügen</h1>
+  <p class="sub">Fotos auswählen, Kategorie wählen, fertig – wird automatisch verkleinert und auf der Website veröffentlicht.</p>
+
+  <div class="panel">
+    <label for="categorySelect">Kategorie für alle ausgewählten Fotos</label>
+    <select id="categorySelect">
+      <option value="wandgestaltung">Wandgestaltung &amp; Auftragsarbeiten</option>
+      <option value="leinwaende">Leinwände</option>
+      <option value="skulpturen">Skulpturen : Objekte</option>
+      <option value="workshops">Workshops</option>
+      <option value="ausstellungen">Ausstellungen</option>
+      <option value="klassisches-graffiti">Klassisches Graffiti</option>
+    </select>
+
+    <label for="fileInput">Fotos auswählen</label>
+    <input type="file" id="fileInput" accept="image/*" multiple>
+    <p class="hint">Mehrfachauswahl möglich. Jedes Foto wird auf max. 1600px Breite verkleinert und komprimiert.</p>
+    <div id="fileList"></div>
+    <button id="uploadBtn" type="button" disabled>Hochladen &amp; veröffentlichen</button>
+  </div>
+
+  <div class="panel">
+    <label>Status</label>
+    <div id="log" class="muted">Noch keine Aktion.</div>
+  </div>
+
+  <div class="panel">
+    <label>Vorhandene Fotos verwalten</label>
+    <button id="loadExistingBtn" type="button" class="secondary">Fotos laden</button>
+    <div id="existingList" style="margin-top: 14px;"></div>
+  </div>
+</div>
+
+<script>
+const WORKER_BASE = "https://galerie-upload.galerie-upload-worker.workers.dev";
+const WORKER_URL = `${WORKER_BASE}/upload`;
+const MAX_WIDTH = 1600;
+const MAX_HEIGHT = 1600;
+const WEBP_QUALITY = 0.82;
+const JPEG_FALLBACK_QUALITY = 0.75;
+
+const categorySelect = document.getElementById("categorySelect");
+const fileInput = document.getElementById("fileInput");
+const fileList = document.getElementById("fileList");
+const uploadBtn = document.getElementById("uploadBtn");
+const log = document.getElementById("log");
+
+let entries = [];
+
+function logLine(text, cls) {
+  const line = document.createElement("div");
+  if (cls) line.className = cls;
+  line.textContent = text;
+  if (log.classList.contains("muted") && log.children.length === 0) {
+    log.classList.remove("muted");
+    log.textContent = "";
+  }
+  log.appendChild(line);
+  log.scrollTop = log.scrollHeight;
+}
+
+function slugify(name) {
+  return name
+    .toLowerCase()
+    .replace(/\.[a-z0-9]+$/i, "")
+    .normalize("NFKD").replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60) || "foto";
+}
+
+async function resizeImage(file) {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, MAX_WIDTH / bitmap.width, MAX_HEIGHT / bitmap.height);
+  const w = Math.round(bitmap.width * scale);
+  const h = Math.round(bitmap.height * scale);
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(bitmap, 0, 0, w, h);
+
+  let blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/webp", WEBP_QUALITY));
+  let ext = "webp";
+  if (!blob || blob.type !== "image/webp") {
+    // Manche Browser (u.a. Safari) unterstützen keine WebP-Kodierung über canvas.toBlob
+    // und liefern dann heimlich ein unkomprimiertes PNG zurück - deshalb explizit prüfen
+    // und in diesem Fall auf ein ordentlich komprimiertes JPEG ausweichen.
+    blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", JPEG_FALLBACK_QUALITY));
+    ext = "jpg";
+  }
+  return { blob, ext, width: w, height: h };
+}
+
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result.split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+fileInput.addEventListener("change", () => {
+  entries = Array.from(fileInput.files).map((file) => ({
+    file,
+    alt: "",
+    previewUrl: URL.createObjectURL(file),
+  }));
+  renderFileList();
+});
+
+function renderFileList() {
+  fileList.innerHTML = "";
+  entries.forEach((entry, i) => {
+    const row = document.createElement("div");
+    row.className = "file-item";
+    row.innerHTML = `
+      <img src="${entry.previewUrl}" alt="">
+      <div class="fields">
+        <input type="text" placeholder="Alt-Text für Google (kurze Bildbeschreibung)" data-i="${i}">
+      </div>
+    `;
+    fileList.appendChild(row);
+  });
+  fileList.querySelectorAll("input").forEach((inp) => {
+    inp.addEventListener("input", (e) => {
+      const i = Number(e.target.dataset.i);
+      entries[i].alt = e.target.value;
+    });
+  });
+  uploadBtn.disabled = entries.length === 0;
+}
+
+async function uploadToWorker(filename, base64Content, alt, category, width, height) {
+  const res = await fetch(WORKER_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ filename, contentBase64: base64Content, alt, category, width, height }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.ok) {
+    throw new Error(data.error || `Server-Fehler (${res.status})`);
+  }
+  return data;
+}
+
+uploadBtn.addEventListener("click", async () => {
+  uploadBtn.disabled = true;
+  const category = categorySelect.value;
+  logLine(`Starte Upload von ${entries.length} Foto(s) in Kategorie "${categorySelect.selectedOptions[0].textContent}"...`);
+  let okCount = 0;
+  for (const entry of entries) {
+    const baseName = slugify(entry.alt || entry.file.name);
+    try {
+      logLine(`Verarbeite "${entry.file.name}"...`);
+      const { blob, ext, width, height } = await resizeImage(entry.file);
+      const filename = `${baseName}-${Date.now().toString(36)}.${ext}`;
+      if (ext !== "webp") {
+        logLine(`  ⚠ Dieser Browser kann kein WebP erzeugen, weiche auf komprimiertes JPEG aus.`, "err");
+      }
+      const base64 = await blobToBase64(blob);
+      await uploadToWorker(filename, base64, entry.alt, category, width, height);
+      logLine(`  → Veröffentlicht (${(blob.size / 1024).toFixed(0)} KB): ${filename}`, "ok");
+      okCount++;
+    } catch (err) {
+      logLine(`  ✗ Fehler bei "${entry.file.name}": ${err.message}`, "err");
+    }
+  }
+  logLine(`Fertig: ${okCount}/${entries.length} Foto(s) veröffentlicht. Die Live-Seite baut jetzt neu (meist ~30-60 Sekunden über GitHub Pages).`, okCount === entries.length ? "ok" : "err");
+  uploadBtn.disabled = false;
+});
+
+const loadExistingBtn = document.getElementById("loadExistingBtn");
+const existingList = document.getElementById("existingList");
+
+loadExistingBtn.addEventListener("click", async () => {
+  loadExistingBtn.disabled = true;
+  existingList.textContent = "Lade...";
+  try {
+    const res = await fetch(`${WORKER_BASE}/list`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `Server-Fehler (${res.status})`);
+    renderExisting(data.images);
+  } catch (err) {
+    existingList.textContent = `Fehler beim Laden: ${err.message}`;
+  }
+  loadExistingBtn.disabled = false;
+});
+
+function renderExisting(images) {
+  existingList.innerHTML = "";
+  if (images.length === 0) {
+    existingList.textContent = "Keine Fotos gefunden.";
+    return;
+  }
+  images.forEach((img) => {
+    const row = document.createElement("div");
+    row.className = "existing-item";
+    row.innerHTML = `
+      <img src="../images/${img.filename}" alt="">
+      <div class="info">
+        <div class="alt">${img.caption || img.alt || img.filename}</div>
+        ${img.caption ? `<div class="caption">${img.alt}</div>` : ""}
+      </div>
+      <button type="button" class="danger">Löschen</button>
+    `;
+    row.querySelector("button").addEventListener("click", () => deleteExisting(img.filename, row));
+    existingList.appendChild(row);
+  });
+}
+
+async function deleteExisting(filename, row) {
+  if (!confirm(`"${filename}" wirklich endgültig löschen?`)) return;
+  const btn = row.querySelector("button");
+  btn.disabled = true;
+  btn.textContent = "...";
+  try {
+    const res = await fetch(`${WORKER_BASE}/delete`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ filename }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.ok) throw new Error(data.error || `Server-Fehler (${res.status})`);
+    row.remove();
+  } catch (err) {
+    alert(`Fehler beim Löschen: ${err.message}`);
+    btn.disabled = false;
+    btn.textContent = "Löschen";
+  }
+}
+</script>
+</body>
+</html>
