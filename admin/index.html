@@ -153,6 +153,22 @@
 <script>
 const WORKER_BASE = "https://galerie-upload.galerie-upload-worker.workers.dev";
 const WORKER_URL = `${WORKER_BASE}/upload`;
+// Passwort für Upload/Löschen (seit 22.11.2026). Wird einmal abgefragt und im Browser gemerkt.
+function galeriePasswort() {
+  let p = null;
+  try { p = localStorage.getItem("galerie-passwort"); } catch (e) {}
+  if (!p) {
+    p = (prompt("Passwort für den Foto-Upload:") || "").trim();
+    if (p) { try { localStorage.setItem("galerie-passwort", p); } catch (e) {} }
+  }
+  return p || "";
+}
+function galerieKopf() { return { "Content-Type": "application/json", "X-Galerie-Passwort": galeriePasswort() }; }
+function passwortFalsch(res) {
+  if (res.status !== 401) return false;
+  try { localStorage.removeItem("galerie-passwort"); } catch (e) {}
+  return true;
+}
 const MAX_WIDTH = 1600;
 const MAX_HEIGHT = 1600;
 const WEBP_QUALITY = 0.82;
@@ -251,12 +267,16 @@ function renderFileList() {
   uploadBtn.disabled = entries.length === 0;
 }
 
+function stoppFehler(text) { const e = new Error(text); e.stopp = true; return e; }
 async function uploadToWorker(filename, base64Content, alt, category, width, height) {
+  const kopf = galerieKopf();
+  if (!kopf["X-Galerie-Passwort"]) throw stoppFehler("Kein Passwort eingegeben. Upload abgebrochen.");
   const res = await fetch(WORKER_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: kopf,
     body: JSON.stringify({ filename, contentBase64: base64Content, alt, category, width, height }),
   });
+  if (passwortFalsch(res)) throw stoppFehler("Passwort falsch. Upload abgebrochen, beim nächsten Versuch wird es neu abgefragt.");
   const data = await res.json().catch(() => ({}));
   if (!res.ok || !data.ok) {
     throw new Error(data.error || `Server-Fehler (${res.status})`);
@@ -284,6 +304,7 @@ uploadBtn.addEventListener("click", async () => {
       okCount++;
     } catch (err) {
       logLine(`  ✗ Fehler bei "${entry.file.name}": ${err.message}`, "err");
+      if (err.stopp) break;
     }
   }
   logLine(`Fertig: ${okCount}/${entries.length} Foto(s) veröffentlicht. Die Live-Seite baut jetzt neu (meist ~30-60 Sekunden über GitHub Pages).`, okCount === entries.length ? "ok" : "err");
@@ -337,9 +358,10 @@ async function deleteExisting(filename, row) {
   try {
     const res = await fetch(`${WORKER_BASE}/delete`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: galerieKopf(),
       body: JSON.stringify({ filename }),
     });
+    if (passwortFalsch(res)) throw new Error("Passwort falsch. Beim nächsten Versuch wird es neu abgefragt.");
     const data = await res.json();
     if (!res.ok || !data.ok) throw new Error(data.error || `Server-Fehler (${res.status})`);
     row.remove();
